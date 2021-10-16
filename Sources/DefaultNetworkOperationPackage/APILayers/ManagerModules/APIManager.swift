@@ -39,6 +39,7 @@ public class APIManager: APIManagerInterface {
         if error != nil {
             // completion failure
             print("makasi : \(String(describing: error))")
+            completion(.failure(ErrorResponse(serverResponse: ServerResponse(returnMessage: error!.localizedDescription, returnCode: error!._code), apiConnectionErrorType: .serverError(error!._code))))
         }
         
         if let data = data {
@@ -51,6 +52,7 @@ public class APIManager: APIManagerInterface {
             } catch let error {
                 // completion failure
                 print("error :\(error)")
+                completion(.failure(ErrorResponse(serverResponse: ServerResponse(returnMessage: error.localizedDescription, returnCode: error._code), apiConnectionErrorType: .dataDecodedFailed(error.localizedDescription))))
             }
         }
         
