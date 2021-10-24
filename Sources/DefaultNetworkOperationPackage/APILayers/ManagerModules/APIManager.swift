@@ -10,15 +10,16 @@ import Network
 
 public class APIManager: APIManagerInterface {
     
-    public static let shared = APIManager()
-
     // Mark: - Session -
     private let session: URLSession
 
     // Mark: - JsonDecoder -
     private var jsonDecoder = JSONDecoder()
     
-    public init() {
+    private var apiCallListener: ApiCallListener?
+    
+    public init(apiCallListener: ApiCallListener? = nil) {
+        self.apiCallListener = apiCallListener
         let config = URLSessionConfiguration.default
         config.waitsForConnectivity = true
         config.timeoutIntervalForResource = 300
@@ -27,6 +28,8 @@ public class APIManager: APIManagerInterface {
     }
     
     public func executeRequest<R>(urlRequest: URLRequest, completion: @escaping (Result<R, ErrorResponse>) -> Void) where R : Codable {
+        
+        apiCallListener?.onPreExecute()
         
         session.dataTask(with: urlRequest) { [weak self](data, urlResponse, error) in
             self?.dataTaskHandler(data, urlResponse, error, completion: completion)
@@ -55,6 +58,8 @@ public class APIManager: APIManagerInterface {
                 completion(.failure(ErrorResponse(serverResponse: ServerResponse(returnMessage: error.localizedDescription, returnCode: error._code), apiConnectionErrorType: .dataDecodedFailed(error.localizedDescription))))
             }
         }
+        
+        apiCallListener?.onPostExecute()
         
     }
     
