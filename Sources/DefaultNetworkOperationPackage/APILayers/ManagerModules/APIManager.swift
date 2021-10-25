@@ -21,7 +21,9 @@ public class APIManager: APIManagerInterface {
     public init(apiCallListener: ApiCallListener? = nil) {
         self.apiCallListener = apiCallListener
         let config = URLSessionConfiguration.default
-        config.waitsForConnectivity = true
+        if #available(macOS 10.13, *) {
+            config.waitsForConnectivity = true
+        }
         config.timeoutIntervalForResource = 300
         config.requestCachePolicy = .reloadIgnoringLocalAndRemoteCacheData
         self.session = URLSession(configuration: config)
