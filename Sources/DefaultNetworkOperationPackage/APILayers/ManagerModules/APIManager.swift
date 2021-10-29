@@ -10,6 +10,7 @@ import Network
 
 public class APIManager: APIManagerInterface {
     
+    //shared
     public static let shared = APIManager()
     
     // Mark: - Session -
